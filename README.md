@@ -36,6 +36,7 @@ When succesful, the application will run on http://localhost:8100/
 
 ## Android native
 1. Install android studio
+2. run `ionic build` (run once)
 2. run `ionic capacitor add android` (run once)
 3. run `ionic capacitor copy android` (run this command to build the whole android thing)
 4. run `npx cap open android` (opens android studio with the correct config, run once)
