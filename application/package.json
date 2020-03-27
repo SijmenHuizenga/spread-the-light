@@ -21,6 +21,7 @@
     "@angular/router": "~8.2.14",
     "@capacitor/android": "^1.5.2",
     "@capacitor/core": "1.5.2",
+    "@capacitor/ios": "^1.5.2",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/flashlight": "^5.23.0",
     "@ionic-native/splash-screen": "^5.0.0",
