@@ -1,0 +1,7 @@
+{
+  "name": "Spread the light",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
