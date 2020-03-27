@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 
 @Component({
@@ -6,7 +6,7 @@ import { LoadingController } from '@ionic/angular';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
-export class Tab2Page {
+export class Tab2Page implements AfterViewInit {
   @ViewChild('video', { static: false }) video: ElementRef;
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
 
@@ -24,7 +24,7 @@ export class Tab2Page {
   /**
    * Sets attributes after view has been loaded
    */
-  AfterViewInit() {
+  ngAfterViewInit() {
     this.canvasElement = this.canvas.nativeElement;
     this.canvasContext = this.canvasElement.getContext('2d');
     this.videoElement = this.video.nativeElement;

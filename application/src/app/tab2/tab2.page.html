@@ -6,10 +6,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content scrollEvents=false>
   
   <!-- Shows the camera stream -->
-  <video #video [hidden]="!scanActive" width="100%" height="100%"></video>
+  <video #video [hidden]="!scanActive" height="100%"></video>
 
   <!-- Used to render the camera stream images -->
   <canvas #canvas hidden></canvas>
@@ -20,7 +20,7 @@
       <ion-icon name="scan-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  
+
   <!-- Start scan button -->
   <ng-template #stopScanning>
     <ion-fab vertical="bottom" horizontal="center" slot="fixed">
