@@ -21,13 +21,22 @@ export class Tab1Page {
           alert("Flashlight not available on this device");
           return;
         }
-        Flashlight.switchOn()
-    
-        // switch off after 3 seconds
-        setTimeout(function() {
-          Flashlight.switchOff(); // success/error callbacks may be passed
-        }, 3000);
-      
+
+        var i = 0;
+        function flashNext() {
+          Flashlight.switchOn();
+          setTimeout(function() {
+            Flashlight.switchOff();
+            if(i == 99) {
+              return
+            }
+            setTimeout(function() {
+              flashNext();
+            }, i % 2 == 0 ? 100 : 200);
+          }, 100);
+          i++
+        }
+        flashNext()
       })
      });
   }
