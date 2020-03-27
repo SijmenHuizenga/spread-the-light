@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
@@ -8,22 +7,80 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
+  @ViewChild('video', { static: false }) video: ElementRef;
+  @ViewChild('canvas', { static: false }) canvas: ElementRef;
 
-  photo: SafeResourceUrl;
+  // Create class attributes
+  canvasElement: any;
+  videoElement: any;
+  canvasContext: any;
+  scanActive = false;
+  loading: HTMLIonLoadingElement = null;
 
   constructor(
-    private sanitizer: DomSanitizer
+    private loadingCtrl: LoadingController
   ) {}
 
-  async takePicture() {
-    const image = await Plugins.Camera.getPhoto({
-      quality: 100,
-      allowEditing: false,
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera
-    });
-
-    this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+  /**
+   * Sets attributes after view has been loaded
+   */
+  AfterViewInit() {
+    this.canvasElement = this.canvas.nativeElement;
+    this.canvasContext = this.canvasElement.getContext('2d');
+    this.videoElement = this.video.nativeElement;
   }
 
+  /**
+   * Stop camera feed
+   */
+  stopScan() {
+    this.scanActive = false;
+  }
+
+  /**
+   * Start the camera feed
+   */
+  async startScan() {
+    // Start camera stream on front camera
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+
+    // Set camera stream as source video DOM element
+    this.videoElement.srcObject = stream;
+
+    // Show loading animation
+    this.loading = await this.loadingCtrl.create({});
+    await this.loading.present();
+
+    this.videoElement.play();
+    requestAnimationFrame(this.scan.bind(this));
+  }
+
+  /**
+   * Keep updating the view until stopScan method is called
+   */
+  async scan() {
+    if (this.videoElement.readyState === this.videoElement.HAVE_ENOUGH_DATA) {
+      // Close loading animation
+      if (this.loading) {
+        await this.loading.dismiss();
+        this.loading = null;
+        this.scanActive = true;
+      }
+
+      // Set canvas parameters
+      this.canvasElement.height = this.videoElement.videoHeight;
+      this.canvasElement.width = this.videoElement.videoWidth;
+
+      // Draw video images on canvas
+      this.canvasContext.drawImage(this.videoElement, 0, 0, this.canvasElement.width, this.canvasElement.height);
+      const imageData = this.canvasContext.getImageData(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+      // Repeat
+      if (this.scanActive) {
+        requestAnimationFrame(this.scan.bind(this));
+      }
+    }
+  }
 }
