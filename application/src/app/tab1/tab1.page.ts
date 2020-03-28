@@ -37,14 +37,12 @@ export class Tab1Page {
           console.log("ASCII_2_Binary called");
           var output = "";
           // String of all the characters in binary separated by spaces
+          // The number 2 is written between the characters
           for (var i = 0; i < input.length; i++) {
-              output += input[i].charCodeAt(0).toString(2) + " ";
+              output += input[i].charCodeAt(0).toString(2) + "2";
           }
           console.log(output);
           // Convert the string to a array of numbers
-          // TODO:
-              // Right now the space between characters is written as a zero
-              // -> Write it with a different number, or leave the space
           var array = output.split('').map(Number);
           console.log(array);
           return array;
@@ -56,10 +54,9 @@ export class Tab1Page {
         // Variables holding the lengths of the light pulses in ms
         var light_ON = 300;
         var light_OFF = 300;
-        var different_character = 450;
+        var long_pause = 450;
         
-        // Flash the message
-        // TODO: add else if for space between characters
+        // Flash the messag
         function flashMessage() {
           (async () => { 
             for (let i of array){
@@ -68,9 +65,12 @@ export class Tab1Page {
               await delay(light_ON);
               Flashlight.switchOff();
               }
-              else if (i ==0){
+              else if (i == 0){
               await delay(light_OFF);
               }
+              else if (i == 2){
+                await delay(long_pause);
+                }
             }
           })();
         }
