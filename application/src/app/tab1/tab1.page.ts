@@ -16,6 +16,7 @@ export class Tab1Page {
   }
 
   toggleFlashlight() {
+    console.log("toggleFlashlight called");
     this.platform.ready().then(() => {
       Flashlight.available().then((isAvailable :boolean) => {
         if (!isAvailable) {
@@ -26,25 +27,57 @@ export class Tab1Page {
         // Define the delay function
         function delay(ms: number) {
           return new Promise( resolve => setTimeout(resolve, ms) );
-      }
+        }
 
-      // Read the content of the message field and convert to int
-      // TODO: function to encode alphanumerical characters into a binary sequence
-      var number_flashes = +this.inputValue;
-      function flashMessage() {
-        (async () => { 
-          for (let i = 0; i < number_flashes; i++) {
-            Flashlight.switchOn();
-            await delay(300);
-            Flashlight.switchOff();
-            await delay(300);
+        // Read input from the message field
+        var input = this.inputValue
+
+        // Tranform ASCII input to binary array
+        function ASCII_2_Binary() {
+          console.log("ASCII_2_Binary called");
+          var output = "";
+          // String of all the characters in binary separated by spaces
+          for (var i = 0; i < input.length; i++) {
+              output += input[i].charCodeAt(0).toString(2) + " ";
           }
-        })();
-      }
+          console.log(output);
+          // Convert the string to a array of numbers
+          // TODO:
+              // Right now the space between characters is written as a zero
+              // -> Write it with a different number, or leave the space
+          var array = output.split('').map(Number);
+          console.log(array);
+          return array;
+        }
+
+
+        var array = ASCII_2_Binary();
+
+        // Variables holding the lengths of the light pulses in ms
+        var light_ON = 300;
+        var light_OFF = 300;
+        var different_character = 450;
+        
+        // Flash the message
+        // TODO: add else if for space between characters
+        function flashMessage() {
+          (async () => { 
+            for (let i of array){
+              if (i == 1){
+              Flashlight.switchOn();
+              await delay(light_ON);
+              Flashlight.switchOff();
+              }
+              else if (i ==0){
+              await delay(light_OFF);
+              }
+            }
+          })();
+        }
         
         flashMessage();
       })
-     });
+    });
   }
 
 }
