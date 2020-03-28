@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 
 @Component({
@@ -18,7 +19,8 @@ export class Tab2Page implements AfterViewInit {
   loading: HTMLIonLoadingElement = null;
 
   constructor(
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private platform: Platform
   ) {}
 
   /**
@@ -41,20 +43,23 @@ export class Tab2Page implements AfterViewInit {
    * Start the camera feed
    */
   async startScan() {
-    // Start camera stream on front camera
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
+    this.platform.ready().then(() => {
+      // Start camera stream on front camera
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      }).then((stream) => {
+        // Set camera stream as source video DOM element
+        this.videoElement.srcObject = stream;
+        return this.loadingCtrl.create({})
+      }).then((loading) => {
+        this.loading = loading;
+        return this.loading.present()
+      }).then(() => {
+        this.videoElement.play();
+        requestAnimationFrame(this.scan.bind(this));
+      });
+      
     });
-
-    // Set camera stream as source video DOM element
-    this.videoElement.srcObject = stream;
-
-    // Show loading animation
-    this.loading = await this.loadingCtrl.create({});
-    await this.loading.present();
-
-    this.videoElement.play();
-    requestAnimationFrame(this.scan.bind(this));
   }
 
   /**
