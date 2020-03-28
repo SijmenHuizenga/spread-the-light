@@ -16,7 +16,7 @@
 
   <!-- Start scan button -->
   <ion-fab *ngIf="!scanActive; else stopScanning" vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="startScan()">
+    <ion-fab-button (click)="startCamera()">
       <ion-icon name="scan-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
@@ -24,7 +24,7 @@
   <!-- Start scan button -->
   <ng-template #stopScanning>
     <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-      <ion-fab-button (click)="stopScan()" color="danger">
+      <ion-fab-button (click)="stopCamera()" color="danger">
         <ion-icon name="scan-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
