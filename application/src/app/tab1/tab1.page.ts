@@ -10,6 +10,7 @@ import { Flashlight } from '@ionic-native/flashlight';
 })
 export class Tab1Page {
 
+  inputValue: string = "";
   constructor(private platform: Platform) {
 
   }
@@ -22,21 +23,26 @@ export class Tab1Page {
           return;
         }
 
-        var i = 0;
-        function flashNext() {
-          Flashlight.switchOn();
-          setTimeout(function() {
+        // Define the delay function
+        function delay(ms: number) {
+          return new Promise( resolve => setTimeout(resolve, ms) );
+      }
+
+      // Read the content of the message field and convert to int
+      // TODO: function to encode alphanumerical characters into a binary sequence
+      var number_flashes = +this.inputValue;
+      function flashMessage() {
+        (async () => { 
+          for (let i = 0; i < number_flashes; i++) {
+            Flashlight.switchOn();
+            await delay(300);
             Flashlight.switchOff();
-            if(i == 99) {
-              return
-            }
-            setTimeout(function() {
-              flashNext();
-            }, i % 2 == 0 ? 100 : 200);
-          }, 100);
-          i++
-        }
-        flashNext()
+            await delay(300);
+          }
+        })();
+      }
+        
+        flashMessage();
       })
      });
   }
