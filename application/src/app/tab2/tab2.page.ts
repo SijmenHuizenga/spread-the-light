@@ -45,6 +45,14 @@ export class Tab2Page implements AfterViewInit {
   async startScan() {
     this.platform.ready().then(() => {
       // Start camera stream on front camera
+      if(navigator === undefined) {
+        console.log("navigator undefined ===============================")
+      } else if (navigator.mediaDevices === undefined) {
+        console.log("navigator.mediaDevices undefined ==========================")
+      } else {
+        console.log("NOTHING UNDEIFNED =====================")
+      }
+
       navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
       }).then((stream) => {
