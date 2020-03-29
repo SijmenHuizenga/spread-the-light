@@ -47,4 +47,13 @@ public class MorseCode {
         dict.put('0', "_____");
     }
 
+    public static char code2letter(String code) {
+        for(char knownLetter : dict.keySet()) {
+            if(code.equals(dict.get(knownLetter))){
+                return knownLetter;
+            }
+        }
+        return '?';
+    }
+
 }

@@ -24,6 +24,17 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
 
     public static final int MORSE_TIMEUNIT = 200;
 
+    // low timeouts
+    public static final int MORSE_TIMEUNIT_LETTER = 3*MORSE_TIMEUNIT;
+    public static final int MORSE_TIMEUNIT_SPACE = 7 * MORSE_TIMEUNIT;
+    public static final int MORSE_TIMEUNIT_CODES = MORSE_TIMEUNIT;
+
+    // hi timeouts
+    public static final int MORSE_TIMEUNIT_DASH = 3*MORSE_TIMEUNIT;
+    public static final int MORSE_TIMEUNIT_DOT = MORSE_TIMEUNIT;
+
+
+
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Camera camera;
     private Button flashlightsubmitbutton;
@@ -86,7 +97,7 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
         for (int letterIndex = 0; letterIndex < letters.length; letterIndex++) {
             if (letters[letterIndex] == ' ') {
                 //The space between words is 7 time units.
-                sleep(7 * MORSE_TIMEUNIT);
+                sleep(MORSE_TIMEUNIT_SPACE);
 
                 // After waiting for a space we continue to the next letter immediatly
                 continue;
@@ -96,10 +107,9 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
             if (letterIndex != 0 && letters[letterIndex-1] != ' ') {
                 // Do not sleep if it's the first character.
                 // Do not sleep when the previous letter was a space
-                sleep(3 * MORSE_TIMEUNIT);
+                sleep(MORSE_TIMEUNIT_LETTER);
             }
 
-            // code is a string like ".._._"
             String code = MorseCode.dict.get(letters[letterIndex]);
             if (code == null) {
                 //for now, skip characters unknown to our dictionary
@@ -112,10 +122,10 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
                 long start = System.currentTimeMillis();
                 if (signals[i] == '.') {
                     //The length of a dot is 1 time unit.
-                    sleep(MORSE_TIMEUNIT);
+                    sleep(MORSE_TIMEUNIT_DOT);
                 } else if (signals[i] == '_') {
                     //A dash is 3 time units.
-                    sleep(3 * MORSE_TIMEUNIT);
+                    sleep(MORSE_TIMEUNIT_DASH);
                 } else {
                     throw new IllegalStateException("Illegal Charaacter");
                 }
@@ -123,7 +133,7 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
                 System.out.println(System.currentTimeMillis()-start);
                 if (i < signals.length - 1) {
                     //The space between symbols (dots and dashes) of the same letter is 1 time unit.
-                    sleep(MORSE_TIMEUNIT);
+                    sleep(MORSE_TIMEUNIT_CODES);
                 }
             }
         }

@@ -9,14 +9,27 @@ import androidx.databinding.ObservableField;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import static nl.fsteamdelft.spreadthelight.ui.SendingFragment.*;
+
 public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
 
-    private ObservableField<String> brightnesssOutput;
+    private ObservableField<String> output;
     private LinkedList<Float> brightnessHistory = new LinkedList<>();
     private float brighnessRunningAverage = 100f;
 
+    // how much the time may differ from the actual time to still be detected. We do 20%.
+    private static final int fidality = 100;
+
+    // high = true = ON
+    // low = false = OFF
+    // Detection shows the light is on/of value since hiLowStatChangeMoment
+    private boolean hiLowState = false;
+    private long hiLowStateChangeMoment = 0;
+    private String code = "";
+    private String sentence ="";
+
     public MorseImageAnalyzer(ObservableField<String> brightnesss) {
-        this.brightnesssOutput = brightnesss;
+        this.output = brightnesss;
         for(int i = 0; i < 90; i++) {
             brightnessHistory.add(100f);
         }
@@ -44,11 +57,36 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
         float removedAverage = brightnessHistory.removeLast();
         brighnessRunningAverage = (brightnessHistory.size() * brighnessRunningAverage + brightness - removedAverage) / brightnessHistory.size();
 
-        this.brightnesssOutput.set("Average: "+ brighnessRunningAverage);
-
         boolean highlow = brightness > brighnessRunningAverage;
 
-        System.out.println(System.currentTimeMillis() + " " + brightness + " " + brighnessRunningAverage + " " + (highlow ? 1 : 0));
+        if(highlow != hiLowState) {
+            long now = System.currentTimeMillis();
+            long timediff = now - hiLowStateChangeMoment;
+            System.out.println(highlow + " " + timediff);
+            if(highlow) {
+                // LOW -> HIGH
+                if(timediff - fidality < MORSE_TIMEUNIT_LETTER && timediff + fidality > MORSE_TIMEUNIT_LETTER) {
+                    sentence += MorseCode.code2letter(code);
+                    code = "";
+                }
+                if(timediff - fidality < MORSE_TIMEUNIT_SPACE && timediff + fidality > MORSE_TIMEUNIT_SPACE) {
+                    sentence += " ";
+                }
+            } else {
+                // HIGH -> LOW
+                if(timediff - fidality < MORSE_TIMEUNIT_DASH && timediff + fidality > MORSE_TIMEUNIT_DASH) {
+                    code += "_";
+                }
+                if(timediff - fidality < MORSE_TIMEUNIT_DOT && timediff + fidality > MORSE_TIMEUNIT_DOT) {
+                    code += ".";
+                }
+            }
+            hiLowStateChangeMoment = now;
+            hiLowState = highlow;
+        }
+        
+        this.output.set(sentence + code);
+
         image.close();
     }
 
