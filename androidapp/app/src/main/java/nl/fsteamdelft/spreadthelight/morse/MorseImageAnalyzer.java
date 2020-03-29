@@ -5,17 +5,21 @@ import androidx.annotation.NonNull;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 
 public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
 
-
-    private ObservableField<String> brightnesss;
+    private ObservableField<String> brightnesssOutput;
+    private LinkedList<Float> brightnessHistory = new LinkedList<>();
+    private float brighnessRunningAverage = 100f;
 
     public MorseImageAnalyzer(ObservableField<String> brightnesss) {
-        this.brightnesss = brightnesss;
+        this.brightnesssOutput = brightnesss;
+        for(int i = 0; i < 90; i++) {
+            brightnessHistory.add(100f);
+        }
     }
 
     @Override
@@ -34,10 +38,17 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
                 total += ((int) bytes[y*image.getWidth()+x]) & 0xFF;
             }
         }
-        float average = total / (float)(aoi.width()*aoi.height());
-        this.brightnesss.set(""+average);
+        float brightness = total / (float)(aoi.width()*aoi.height());
 
-        System.out.println(System.currentTimeMillis() + " " + average);
+        brightnessHistory.addFirst(brightness);
+        float removedAverage = brightnessHistory.removeLast();
+        brighnessRunningAverage = (brightnessHistory.size() * brighnessRunningAverage + brightness - removedAverage) / brightnessHistory.size();
+
+        this.brightnesssOutput.set("Average: "+ brighnessRunningAverage);
+
+        boolean highlow = brightness > brighnessRunningAverage;
+
+        System.out.println(System.currentTimeMillis() + " " + brightness + " " + brighnessRunningAverage + " " + (highlow ? 1 : 0));
         image.close();
     }
 
