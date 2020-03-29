@@ -76,6 +76,20 @@ export class Tab2Page implements AfterViewInit {
       // Draw video images on canvas
       this.canvasContext.drawImage(this.videoElement, 0, 0, this.canvasElement.width, this.canvasElement.height);
       const imageData = this.canvasContext.getImageData(0, 0, this.canvasElement.width, this.canvasElement.height);
+      const data = imageData.data;
+      console.log(1, imageData.data);
+
+      // Greyscale image
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i]     = avg; // red
+        data[i + 1] = avg; // green
+        data[i + 2] = avg; // blue
+      }
+      console.log(2, data);
+      imageData.data.set(data);
+
+      this.canvasContext.putImageData(imageData, 0, 0);
 
       // Repeat
       if (this.scanActive) {
