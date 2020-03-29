@@ -14,8 +14,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.common.util.concurrent.ListenableFuture;
 import nl.fsteamdelft.spreadthelight.R;
-import nl.fsteamdelft.spreadthelight.morse.Morse;
-import nl.fsteamdelft.spreadthelight.morse.MorseChar;
 import nl.fsteamdelft.spreadthelight.morse.MorseCode;
 
 import java.util.concurrent.ExecutionException;
@@ -24,11 +22,6 @@ import java.util.concurrent.Executors;
 
 public class SendingFragment extends Fragment implements View.OnClickListener {
 
-    //The length of a dot is 1 time unit.
-    //A dash is 3 time units.
-    //The space between symbols (dots and dashes) of the same letter is 1 time unit.
-    //The space between letters is 3 time units.
-    //The space between words is 7 time units.
     public static final int MORSE_TIMEUNIT = 200;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -89,17 +82,50 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
     }
 
     private void send(String text) {
-        for (String word : text.split(" ")) {
-            for(MorseChar c : Morse.encode(text)) {
-                for(MorseCode code : c.getMorseCodeSequence()) {
-                    camera.getCameraControl().enableTorch(true);
-                    sleep(code == MorseCode.DOT ? MORSE_TIMEUNIT : MORSE_TIMEUNIT *3);
-                    camera.getCameraControl().enableTorch(false);
+        char[] letters = text.toLowerCase().toCharArray();
+        for (int letterIndex = 0; letterIndex < letters.length; letterIndex++) {
+            if (letters[letterIndex] == ' ') {
+                //The space between words is 7 time units.
+                sleep(7 * MORSE_TIMEUNIT);
+
+                // After waiting for a space we continue to the next letter immediatly
+                continue;
+            }
+
+            //The space between letters is 3 time units.
+            if (letterIndex != 0 && letters[letterIndex-1] != ' ') {
+                // Do not sleep if it's the first character.
+                // Do not sleep when the previous letter was a space
+                sleep(3 * MORSE_TIMEUNIT);
+            }
+
+            // code is a string like ".._._"
+            String code = MorseCode.dict.get(letters[letterIndex]);
+            if (code == null) {
+                //for now, skip characters unknown to our dictionary
+                continue;
+            }
+
+            char[] signals = code.toCharArray();
+            for (int i = 0; i < signals.length; i++) {
+                camera.getCameraControl().enableTorch(true);
+                long start = System.currentTimeMillis();
+                if (signals[i] == '.') {
+                    //The length of a dot is 1 time unit.
+                    sleep(MORSE_TIMEUNIT);
+                } else if (signals[i] == '_') {
+                    //A dash is 3 time units.
+                    sleep(3 * MORSE_TIMEUNIT);
+                } else {
+                    throw new IllegalStateException("Illegal Charaacter");
+                }
+                camera.getCameraControl().enableTorch(false);
+                System.out.println(System.currentTimeMillis()-start);
+                if (i < signals.length - 1) {
+                    //The space between symbols (dots and dashes) of the same letter is 1 time unit.
                     sleep(MORSE_TIMEUNIT);
                 }
-                sleep(MORSE_TIMEUNIT*3);
             }
-            sleep(MORSE_TIMEUNIT*7);
         }
     }
 
