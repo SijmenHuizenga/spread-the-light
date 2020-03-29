@@ -12,13 +12,9 @@ import java.nio.ByteBuffer;
 
 public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
 
-    long timeSinceLastFrame = 0;
-
     @Override
     public void analyze(@NonNull ImageProxy image) {
-        // area of intrest is the center 50x50 pixels
-        Rect area = image.getCropRect();
-        Rect aoi = new Rect(area.centerX()-25, area.centerY()-25, area.centerX()+25, area.centerY()+25);
+        Rect aoi = getAreaOfIntrest(image.getCropRect());
 
         // Since format in ImageAnalysis is YUV, image.planes[0] contains the Y (luminance) plane
         ImageProxy.PlaneProxy plane = image.getPlanes()[0];
@@ -33,10 +29,12 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
             }
         }
         float average = total / (float)(aoi.width()*aoi.height());
-        System.out.println(average);
-
-//        System.out.println("ms since last frame: " + (timeSinceLastFrame - System.currentTimeMillis()));
-        timeSinceLastFrame = System.currentTimeMillis();
+        System.out.println(System.currentTimeMillis() + " " + average);
         image.close();
+    }
+
+    public static Rect getAreaOfIntrest(Rect area) {
+        //center 50x50 pixels
+        return new Rect(area.centerX()-25, area.centerY()-25, area.centerX()+25, area.centerY()+25);
     }
 }
