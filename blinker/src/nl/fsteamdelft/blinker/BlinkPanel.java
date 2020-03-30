@@ -9,7 +9,7 @@ public class BlinkPanel extends JPanel {
     private String descritpion;
 
     public BlinkPanel() {
-        setBorder(BorderFactory.createLineBorder(Color.black));
+        setDoubleBuffered(true);
     }
 
     public Dimension getPreferredSize() {

@@ -111,7 +111,7 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
             String code = MorseCode.dict.get(letters[letterIndex]);
             if (code == null) {
                 //for now, skip characters unknown to our dictionary
-                continue;
+                throw new IllegalStateException("Illegal character " + letters[letterIndex]);
             }
 
             char[] signals = code.toCharArray();
@@ -129,7 +129,7 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
                 }
                 camera.getCameraControl().enableTorch(false);
                 System.out.println(System.currentTimeMillis()-start);
-                if (i < signals.length - 1) {
+                if (i < signals.length-1) {
                     //The space between symbols (dots and dashes) of the same letter is 1 time unit.
                     sleep(MORSE_TIMEUNIT_CODES);
                 }
