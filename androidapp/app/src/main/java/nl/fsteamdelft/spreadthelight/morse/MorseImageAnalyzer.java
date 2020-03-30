@@ -23,7 +23,7 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
     // high = true = ON
     // low = false = OFF
     // Detection shows the light is on/of value since hiLowStatChangeMoment
-    private boolean hiLowState = false;
+    private boolean wasOnBefore = false;
     private long hiLowStateChangeMoment = 0;
     private String code = "";
     private String sentence ="";
@@ -59,11 +59,11 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
 
 
         boolean hightolow;
-        if(hiLowState && brightness < brighnessRunningAverage - 10) {
+        if(wasOnBefore && brightness < brighnessRunningAverage - 10) {
             // previously was high, now we are low. So we are doing HIGH->LOW
             hightolow = true;
-        } else if(!hiLowState && brightness > brighnessRunningAverage + 10) {
-            // previously was high, now we are . So we are doing LOW->HIGH
+        } else if(!wasOnBefore && brightness > brighnessRunningAverage + 10) {
+            // previously was low, now we are high. So we are doing LOW->HIGH
             hightolow = false;
         } else {
             image.close();
@@ -85,7 +85,6 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
             } else {
                 System.out.println("? hi->low" + timediff);
             }
-
         } else {
             // LOW -> HIGH. So the light has been OFF
             if(timediff - fidality < MORSE_TIMEUNIT_LETTER && timediff + fidality > MORSE_TIMEUNIT_LETTER) {
@@ -100,7 +99,7 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
             }
         }
         hiLowStateChangeMoment = now;
-        hiLowState = hightolow;
+        wasOnBefore = !hightolow;
 
         this.output.set(sentence + code);
 

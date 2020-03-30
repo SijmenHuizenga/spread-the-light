@@ -57,10 +57,9 @@ public class Main {
 
             char[] signals = code.toCharArray();
             for (int i = 0; i < signals.length; i++) {
-                blinkPanel.tortchToggle(true, letters[letterIndex] + " " + code + " " + i);
-                blinkPanel.repaint();
-
                 long start = System.currentTimeMillis();
+                blinkPanel.tortchToggle(true, letters[letterIndex] + " " + code + " " + i);
+
                 if (signals[i] == '.') {
                     //The length of a dot is 1 time unit.
                     sleep(MORSE_TIMEUNIT_DOT);
@@ -71,7 +70,6 @@ public class Main {
                     throw new IllegalStateException("Illegal Charaacter");
                 }
                 blinkPanel.tortchToggle(false, letters[letterIndex] + " " + code + " " + i);
-                blinkPanel.repaint();
                 System.out.println(signals[i] + " " + (System.currentTimeMillis()-start));
                 if (i < signals.length - 1) {
                     //The space between symbols (dots and dashes) of the same letter is 1 time unit.
