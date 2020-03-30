@@ -25,15 +25,13 @@ public class SendingFragment extends Fragment implements View.OnClickListener {
     public static final int MORSE_TIMEUNIT = 200;
 
     // low timeouts
-    public static final int MORSE_TIMEUNIT_LETTER = 3*MORSE_TIMEUNIT;
-    public static final int MORSE_TIMEUNIT_SPACE = 7 * MORSE_TIMEUNIT;
-    public static final int MORSE_TIMEUNIT_CODES = MORSE_TIMEUNIT;
+    public static final int MORSE_TIMEUNIT_LETTER = 3*MORSE_TIMEUNIT; //600
+    public static final int MORSE_TIMEUNIT_SPACE = 7 * MORSE_TIMEUNIT; //1400
+    public static final int MORSE_TIMEUNIT_CODES = MORSE_TIMEUNIT; // 200
 
     // hi timeouts
-    public static final int MORSE_TIMEUNIT_DASH = 3*MORSE_TIMEUNIT;
-    public static final int MORSE_TIMEUNIT_DOT = MORSE_TIMEUNIT;
-
-
+    public static final int MORSE_TIMEUNIT_DASH = 3*MORSE_TIMEUNIT;//600
+    public static final int MORSE_TIMEUNIT_DOT = MORSE_TIMEUNIT;//200
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Camera camera;

@@ -25,10 +25,9 @@ public class RectangleView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         Rect aoi = getAreaOfIntrest(new Rect(0, 0, w, h));
-
-        drawable.getPaint().setColor(Color.valueOf(1, 1, 1).toArgb());
+        drawable.getPaint().setColor(Color.parseColor("white"));
         drawable.getPaint().setStrokeWidth(3);
-;       drawable.getPaint().setStyle(Paint.Style.STROKE);
+        drawable.getPaint().setStyle(Paint.Style.STROKE);
         drawable.setBounds(aoi);
     }
 
