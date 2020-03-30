@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:torch/torch.dart';
-// import 'dart:io';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 void main() => runApp(MyApp());
@@ -15,23 +15,31 @@ class _MyAppState extends State<MyApp> {
 	bool isOn = false;
 	bool hasTorch = false;
   bool flashcomplete = true;
+  double frequency = 1.0; // Hz
 
 
   void myFlash(Duration duration) {
     flashcomplete = false;
-    int milliseconds = duration.inMilliseconds;
 
-    if (!isOn) {
-      Torch.turnOn();
-      isOn = true;
-      Future.delayed(Duration(milliseconds: milliseconds),
-        ).then((value) {
-         Torch.turnOff();
-         isOn = false;
-         flashcomplete = true;
-        });
-      
-    }
+    // int milliseconds = duration.inMilliseconds;
+
+    // if (!isOn) {
+    //   Torch.turnOn();
+    //   isOn = true;
+    //   Future.delayed(Duration(milliseconds: milliseconds),
+    //      () {
+    //       Torch.turnOff();
+    //       isOn = false;
+    //       flashcomplete = true;
+    //     },
+    //     ).then((value) {     
+    //       debugPrint('Hello');    
+    //     });
+    // }
+
+    Torch.turnOn();
+    sleep(duration);
+    Torch.turnOff();      
     
   }
 
@@ -72,18 +80,25 @@ class _MyAppState extends State<MyApp> {
 									isOn = !isOn;
 								} : null,
 							),
+              TextField(
+                onChanged: (text) {
+                  frequency = double.parse(text);
+                  debugPrint('Frequency: $frequency');
+                },
+                decoration: InputDecoration(
+                  labelText: 'Enter flashing frequency (in Hz)'
+                ),
+              ),
 							RaisedButton(
 								child: Text('FLASH'),
 								onPressed: hasTorch && flashcomplete ?  () {
                   int i = 0;
-                  while (i < 10) {
-                    if (flashcomplete) {
-                      i++;
-                      myFlash(Duration(milliseconds: 1000)); 
-                    }
+                  while (i < 5) {
+                    myFlash(Duration(milliseconds: (1000.0~/frequency).toInt())); 
+                    i++;
                     debugPrint('count: $i');
-                    
                   }
+                  flashcomplete = true;
 									// myFlash(Duration(milliseconds: 1000));
 								} : null,
 							),
