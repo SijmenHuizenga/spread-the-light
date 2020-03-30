@@ -1,0 +1,64 @@
+<html>
+<head>
+
+    <title>testr</title>
+</head>
+<body>
+<div class="columns">
+    <div class="column">
+        <p>
+            <button type="button" onclick="getStream()">Grab video</button>
+        </p>
+
+        <video id="videopreview" controls autoplay style="height:180px; width: 240px;"></video>
+
+        <p id="capabilities"></p>
+    </div>
+
+    <script>
+        function getUserMedia(deviceId) {
+            // if Promise-based API is available, use it
+            if (navigator.mediaDevices) {
+                return navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } }
+                });
+            } else {
+                alert('User Media API not supported.');
+            }
+        }
+
+        function getStream() {
+            getUserMedia()
+                .then(function (stream) {
+                    // var mediaControl = document.querySelector("#videopreview");
+                    //
+                    // if ('srcObject' in mediaControl) {
+                    //     mediaControl.srcObject = stream;
+                    // } else if (navigator.mozGetUserMedia) {
+                    //     mediaControl.mozSrcObject = stream;
+                    // } else {
+                    //     mediaControl.src = (window.URL || window.webkitURL).createObjectURL(stream);
+                    // }
+
+                    const track = stream.getVideoTracks()[0];
+                    // var imageCapture = new ImageCapture(track);
+                    // imageCapture.getPhotoCapabilities().then(function (settings) {
+                    //     document.querySelector("#capabilities").innerHTML = JSON.stringify(settings.fillLightMode);
+                    //     console.log(settings);
+                    // });
+
+                    track.applyConstraints({
+                        advanced: [{torch: true}]
+                    });
+
+                    // mediaControl.play();
+                })
+                .catch(function (err) {
+                    alert('Error: ' + err);
+                });
+        }
+
+    </script>
+</div>
+</body>
+</html>
