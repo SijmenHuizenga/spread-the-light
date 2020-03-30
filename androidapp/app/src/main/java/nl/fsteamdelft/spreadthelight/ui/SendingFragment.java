@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 
 public class SendingFragment extends Fragment implements View.OnClickListener {
 
-    public static final int MORSE_TIMEUNIT = 200;
+    public static final int MORSE_TIMEUNIT = 400;
 
     // low timeouts
     public static final int MORSE_TIMEUNIT_LETTER = 3*MORSE_TIMEUNIT; //600

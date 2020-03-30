@@ -17,8 +17,8 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
     private LinkedList<Float> brightnessHistory = new LinkedList<>();
     private float brighnessRunningAverage = 100f;
 
-    // how much the time may differ from the actual time to still be detected. We do 20%.
-    private static final int fidality = 100;
+    // how much the time may differ from the actual time to still be detected.
+    private static final int fidality = MORSE_TIMEUNIT / 4;
 
     // high = true = ON
     // low = false = OFF
@@ -30,7 +30,7 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
 
     public MorseImageAnalyzer(ObservableField<String> brightnesss) {
         this.output = brightnesss;
-        for(int i = 0; i < 90; i++) {
+        for(int i = 0; i < 180; i++) {
             brightnessHistory.add(100f);
         }
     }
@@ -58,49 +58,46 @@ public class MorseImageAnalyzer implements ImageAnalysis.Analyzer {
         brighnessRunningAverage = (brightnessHistory.size() * brighnessRunningAverage + brightness - removedAverage) / brightnessHistory.size();
 
 
-        System.out.println(brightness - brighnessRunningAverage);
-
         boolean highlow;
-        if(brightness > brighnessRunningAverage + 10) {
-            highlow = true;
-        } else if(brightness < brighnessRunningAverage - 10) {
+        if(hiLowState && brightness < brighnessRunningAverage - 10) {
             highlow = false;
+        } else if(!hiLowState && brightness > brighnessRunningAverage + 10) {
+            highlow = true;
         } else {
             image.close();
             return;
         }
 
-        if(highlow != hiLowState) {
-            long now = System.currentTimeMillis();
-            long timediff = now - hiLowStateChangeMoment;
-            System.out.print(highlow + " " + timediff + " ");
-            if(highlow) {
-                // LOW -> HIGH
-                if(timediff - fidality < MORSE_TIMEUNIT_LETTER && timediff + fidality > MORSE_TIMEUNIT_LETTER) {
-                    sentence += MorseCode.code2letter(code);
-                    code = "";
-                    System.out.println("Letter finished");
-                } else if(timediff - fidality < MORSE_TIMEUNIT_SPACE && timediff + fidality > MORSE_TIMEUNIT_SPACE) {
-                    sentence += " ";
-                    System.out.println("Space");
-                } else {
-                    System.out.println("?");
-                }
+
+        long now = System.currentTimeMillis();
+        long timediff = now - hiLowStateChangeMoment;
+        System.out.println("average: " + brighnessRunningAverage + " brightness: " + brightness + " timediff: " + timediff);
+        if(highlow) {
+            // LOW -> HIGH
+            if(timediff - fidality < MORSE_TIMEUNIT_LETTER && timediff + fidality > MORSE_TIMEUNIT_LETTER) {
+                sentence += MorseCode.code2letter(code);
+                code = "";
+                System.out.println("/");
+            } else if(timediff - fidality < MORSE_TIMEUNIT_SPACE && timediff + fidality > MORSE_TIMEUNIT_SPACE) {
+                sentence += " ";
+                System.out.println(" ");
             } else {
-                // HIGH -> LOW
-                if(timediff - fidality < MORSE_TIMEUNIT_DASH && timediff + fidality > MORSE_TIMEUNIT_DASH) {
-                    code += "_";
-                    System.out.println("_");
-                } else if(timediff - fidality < MORSE_TIMEUNIT_DOT && timediff + fidality > MORSE_TIMEUNIT_DOT) {
-                    code += ".";
-                    System.out.println(".");
-                } else {
-                    System.out.println("?");
-                }
+                System.out.println("? low->hi" + timediff);
             }
-            hiLowStateChangeMoment = now;
-            hiLowState = highlow;
+        } else {
+            // HIGH -> LOW
+            if(timediff - fidality < MORSE_TIMEUNIT_DASH && timediff + fidality > MORSE_TIMEUNIT_DASH) {
+                code += "_";
+                System.out.println("_");
+            } else if(timediff - fidality < MORSE_TIMEUNIT_DOT && timediff + fidality > MORSE_TIMEUNIT_DOT) {
+                code += ".";
+                System.out.println(".");
+            } else {
+                System.out.println("? hi->low" + timediff);
+            }
         }
+        hiLowStateChangeMoment = now;
+        hiLowState = highlow;
 
         this.output.set(sentence + code);
 
