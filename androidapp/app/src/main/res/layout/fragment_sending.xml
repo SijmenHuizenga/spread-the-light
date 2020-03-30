@@ -4,13 +4,20 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
         android:layout_height="match_parent">
+
     <Button
-            android:text="@string/spread_the_light"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/flashlightsubmitbutton" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/flashlightinput"
-            android:layout_marginTop="32dp" android:layout_marginEnd="32dp" android:layout_marginStart="32dp"/>
+        android:id="@+id/flashlightsubmitbutton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="#03A9F4"
+        android:text="@string/spread_the_light"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flashlightinput" />
     <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
